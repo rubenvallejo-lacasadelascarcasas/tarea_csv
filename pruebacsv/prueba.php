@@ -2,8 +2,6 @@
 
 include('../config/config.inc.php');
 include('../init.php');
-
-
 // leer fichero CSV
 $csv_file         = file_get_contents('products.csv');
 $data             = explode("\n", $csv_file);
@@ -16,10 +14,8 @@ foreach ($data as $csv) {
     if ($i < 2) {
         continue;
     }
- 
     // crea un array en base a la linea del excel separado por coma
-    $csv_values = explode(",", $csv);
-    
+    $csv_values = explode(",", $csv);   
     //nos quedamos con los valores para crear el producto
     $reference         = $csv_values[1];
     $name              = $csv_values[0];
@@ -38,24 +34,19 @@ foreach ($data as $csv) {
     $product->quantity            = $quantity;
     $product->id_category_default = $arraydecategorias[0];
     $product->ean13               = $ean13;
-    $product->active              = 1;
-
-   
-   
+    $product->active              = 1; 
     //añade el producto 
   $product->add();
   $product->updateCategories($arraydecategorias);
   StockAvailable::setQuantity((int)$product->id, 0, $product->quantity, Context::getContext()->shop->id);
-    }
-      
+    }      
 // funcion que crea las categorias 
 function crearCategoria($datoscat) {
    $nombrearray       = explode(";", $datoscat);
    $default_language = Configuration::get('PS_LANG_DEFAULT');
    $arraydecategorias = array();
    //recorre las categorias
-    foreach($nombrearray as $valor1) {
-      
+    foreach($nombrearray as $valor1) { 
        $existe_categoria = Category::searchByName($default_language, $valor1); 
         if(count($existe_categoria) < 1) {
           $category = new Category();
@@ -64,9 +55,7 @@ function crearCategoria($datoscat) {
           $category_link_rewrite = Tools::link_rewrite($category->name[$default_language]);
           $category->link_rewrite = createMultiLangField($category_link_rewrite);
           $category->id_parent = Configuration::get('PS_HOME_CATEGORY'); 
-          $category->add();
-         
-            
+          $category->add();       
         foreach (Shop::getContextListShopID() as $shop) { 
             if (!empty($shop) && !is_numeric($shop)) {
              $category->addShop(Shop::getIdByName($shop));
@@ -79,13 +68,9 @@ function crearCategoria($datoscat) {
           array_push($arraydecategorias, $existe_categoria[0]['id_category']);
         }
     }
-
-    
     //devuelve el array con el ID de las categorias 
-    return $arraydecategorias;
-   
+    return $arraydecategorias;  
 }
-
 function createMultiLangField($field) {
     $res = [];
     foreach (Language::getIDs(false) as $id_lang) {
